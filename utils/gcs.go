@@ -5,7 +5,6 @@ import (
 	"io"
 
 	"cloud.google.com/go/storage"
-	"github.com/xitongsys/parquet-go/source"
 	"golang.org/x/net/context"
 )
 
@@ -36,28 +35,6 @@ func newGcsReader(cli *storage.Client, bucket string, obj string) (*gcsReader, e
 	}
 
 	return reader, nil
-}
-
-func NewGcsParquetFile(cli *storage.Client, bucket string, obj string) (source.ParquetFile, error) {
-	gcsReader, err := newGcsReader(cli, bucket, obj)
-	if err != nil {
-		return nil, err
-	}
-	return gcsReader, nil
-}
-
-func (r *gcsReader) Create(name string) (source.ParquetFile, error) {
-	return nil, fmt.Errorf("create not supported for gcs reader interface")
-}
-
-func (r *gcsReader) Open(name string) (source.ParquetFile, error) {
-	return &gcsReader{
-		objHandle: r.objHandle,
-		client:    r.client,
-		ctx:       context.Background(),
-		length:    r.length,
-		offset:    0,
-	}, nil
 }
 
 func (r *gcsReader) Seek(offset int64, whence int) (int64, error) {
